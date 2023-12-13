@@ -31,12 +31,33 @@ void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *k
 }
 
 void set_dense_RHS_DBC_1D(double* RHS, int* la, double* BC0, double* BC1){
+    //resolution d'un systeme lineaire Ax = b cest la fonction qui permet de creer b
+    int n=*la;
+    RHS[0] = *BC0;
+    
+    for (int i = 1; i <n- 1; i++) {
+        RHS[i] = 0.0; 
+    }
+    RHS[n-1] = *BC1;
 }  
 
 void set_analytical_solution_DBC_1D(double* EX_SOL, double* X, int* la, double* BC0, double* BC1){
+    // Calcul de la solution analytique T(x) = T0 + x(T1 - T0)
+    int n=*la;
+     for (int i = 0; i < n; i++) {
+        EX_SOL[i] = *BC0 + X[i] * (*BC1 - *BC0);
+    }
 }  
 
 void set_grid_points_1D(double* x, int* la){
+  //calcul de l'espacement
+  double h= 1.0 / (*la - 1);
+  
+  for (int i = 0; i < *la; i++) {
+        x[i] = i * h;
+        printf("%f ", x[i]);
+    }
+    
 }
 
 void write_GB_operator_rowMajor_poisson1D(double* AB, int* lab, int* la, char* filename){
