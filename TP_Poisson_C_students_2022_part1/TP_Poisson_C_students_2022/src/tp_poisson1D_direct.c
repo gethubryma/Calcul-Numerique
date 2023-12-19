@@ -53,8 +53,11 @@ int main(int argc,char *argv[])
   AB = (double *) malloc(sizeof(double)*lab*la);
 
   set_GB_operator_colMajor_poisson1D(AB, &lab, &la, &kv);
+  // printf("Solution avec BLAS dgbmv\n");
+  //double *blas = (double *)malloc(sizeof(double) * la);
+  //cblas_dgbmv(CblasColMajor, CblasNoTrans, la, la, kl, ku, 1.0, AB, lab, X, 1, 0.0, blas, 1);
 
-  // write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "AB.dat");
+  write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "AB.dat");
 
   printf("Solution with LAPACK\n");
   /* LU Factorization */
@@ -85,12 +88,7 @@ int main(int argc,char *argv[])
   
   printf("\nThe relative forward error is relres = %e\n",relres);
 
-  printf("Solution avec BLAS dgbmv\n");
-
-  double *blas = (double *)malloc(sizeof(double) * la);
-
-  cblas_dgbmv(CblasColMajor, CblasNoTrans, la, la, kl, ku, 1.0, AB, lab, X, 1, 0.0, blas, 1);
-
+  
   free(RHS);
   free(EX_SOL);
   free(X);

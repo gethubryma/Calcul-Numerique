@@ -6,25 +6,22 @@
 #include "lib_poisson1D.h"
 
 void set_GB_operator_colMajor_poisson1D(double* AB, int *lab, int *la, int *kv){
-   //taille 
-   int n = *la; 
+   int n = *la;
 
-    // Parcourir en colonnes
+    // Parcourir la matrice en utilisant une seule boucle i (lignes)
     for (int i = 0; i < n; ++i) {
-        if (i > 0) {
-          //au-dessus de la diagonale
-            AB[*lab + i - 1] = -1.0; 
-        }
-        //diagonale
-        AB[*lab + i] = 2.0; 
-        if (i < n - 1) {
-            //en dessous de la diagonale
-            AB[*lab + i + 1] = -1.0; 
-        }
-        // prochaine colonne dans AB
-        *lab += *kv; 
-    }
 
+        if (i > 0) {
+            AB[*kv + 1 - 1 + i * (*lab) ] = -1.0;
+        }
+
+        if (i < n - 1) {
+            
+            AB[*kv + 1 + 1 + i * (*lab) ] = -1.0;
+        }
+
+        AB[*kv + 1 + i * (*lab) ] = 2.0;
+    }
 }
 
 void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *kv){
