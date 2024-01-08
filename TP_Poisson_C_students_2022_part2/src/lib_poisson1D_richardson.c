@@ -101,13 +101,7 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 
         resvec[k] = norm;
 
-        //Sauvegarde de la convergence dans un fichier pour tracer la courbe de convergence 
-        FILE *file = fopen("convergence_data.dat", "a"); 
-        if (file != NULL) {
-        fprintf(file, "%d %lf\n", k + 1, resvec[k]);
-        fclose(file);
-        }
-
+        
         if (norm < *tol) {
             *nbite = k + 1;  
             break;
