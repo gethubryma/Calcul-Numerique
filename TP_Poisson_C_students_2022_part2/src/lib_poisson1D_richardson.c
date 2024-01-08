@@ -60,6 +60,15 @@ double richardson_alpha_opt(int *la){
   return alpha_opti;
 }
 
+
+//une fonction qui calcule lerreur  par rapport a la solution analytique 
+
+void calculate_error_vector(double* error_vector, double* numerical_solution, double* analytical_solution, int n) {
+    for (int i = 0; i < n; i++) {
+        error_vector[i] = fabs(numerical_solution[i] - analytical_solution[i]);
+    }
+}
+
 void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
  //x^k+1=x^k + alpha(b-A*x^k)
     int n = *la;
@@ -69,7 +78,7 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
     for (int k = 0; k < *maxit; k++) {
         //matrice-vecteur A * X
         for (int i = 0; i < n; i++) {
-            resvec[i] = 0.0;
+            resvec[i] = 0;
             for (int j = fmax(0, i - 1); j <= fmin(n - 1, i + 1); j++) {
                 resvec[i] += AB[1 + i - j + j * ld] * X[j];
             }
@@ -84,13 +93,20 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
         }
 
         //la norme
-        double norm = 0.0;
+        double norm = 0;
         for (int i = 0; i < n; i++) {
             norm += resvec[i] * resvec[i];
         }
         norm = sqrt(norm);
 
         resvec[k] = norm;
+
+        //Sauvegarde de la convergence dans un fichier pour tracer la courbe de convergence 
+        FILE *file = fopen("convergence_data.dat", "a"); 
+        if (file != NULL) {
+        fprintf(file, "%d %lf\n", k + 1, resvec[k]);
+        fclose(file);
+        }
 
         if (norm < *tol) {
             *nbite = k + 1;  
@@ -118,12 +134,13 @@ void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku
           }else if (j - i == *kl) {
               MB[i + j * n] = AB[*ku + i - j + i * (*lab)];
           } else {
-              MB[i + j * n] = 0.0;
+              MB[i + j * n] = 0;
           }
         }
       }
     }
 }
+
 
 void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
   int n = *la;
@@ -136,7 +153,7 @@ void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,i
               if (i == j || i - j == *ku || j - i == *kl) {
                   MB[i + j * n] = AB[*ku + i - j + i * (*lab)];
               } else {
-                  MB[i + j * n] = 0.0;
+                  MB[i + j * n] = 0;
               }
           }
       }
@@ -149,7 +166,7 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int
   for (int k = 0; k < *maxit; k++) {
     //matrice-vecteur MB * X
     for (int i = 0; i < n; i++) {
-        resvec[i] = 0.0;
+        resvec[i] = 0;
         for (int j = fmax(0, i - 1); j <= fmin(n - 1, i + 1); j++) {
             resvec[i] += MB[i + j * n] * X[j];
         }
@@ -163,7 +180,7 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int
         X[i] += resvec[i] / MB[i + i * n];
     }
 
-    double norm = 0.0;
+    double norm = 0;
     for (int i = 0; i < n; i++) {
         norm += resvec[i] * resvec[i];
     }
@@ -178,4 +195,7 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int
 
   }
 }
+
+
+
 

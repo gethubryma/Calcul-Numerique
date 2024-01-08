@@ -69,7 +69,42 @@ void set_grid_points_1D(double* x, int* la){
 }
 
 double relative_forward_error(double* x, double* y, int* la){
-  return 0;
+  int n = *la;
+    
+  double A[n][n]; 
+  double Ax[n];
+  
+  for (int i = 0; i < n; i++) {
+      Ax[i] = 0;
+      for (int j = 0; j < n; j++) {
+          Ax[i] += A[i][j] * x[j];
+      }
+  }
+
+  // le résidu (b - Ax)
+  double residu[n];
+  for (int i = 0; i < n; i++) {
+      residu[i] = y[i] - Ax[i];
+  }
+
+  // Calculer les normes
+  double norm_residu = 0;
+  double norm_A = 0;
+  double norm_x = 0;
+
+  for (int i = 0; i < n; i++) {
+      norm_residu += residu[i] * residu[i];
+      norm_A += A[i][i] * A[i][i];  
+      norm_x += x[i] * x[i];
+  }
+
+  norm_residu = sqrt(norm_residu);
+  norm_A = sqrt(norm_A);
+  norm_x = sqrt(norm_x);
+
+  double relres = norm_residu / (norm_A * norm_x);
+
+  return relres;
 }
 
 int indexABCol(int i, int j, int *lab){
